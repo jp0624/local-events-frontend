@@ -1,23 +1,19 @@
-import { fetchEvents } from "@/lib/drupal";
+// app/venues/page.tsx
+import { fetchVenues } from "@/lib/drupal";
 
-export default async function EventsPage() {
-	let json: any = { data: [] };
-	try {
-		json = await fetchEvents();
-	} catch (err) {
-		console.error("Failed to fetch events:", err);
-	}
+export default async function VenuesPage() {
+	const json = await fetchVenues();
 
 	return (
 		<main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
 			<h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 16 }}>
-				Upcoming Events
+				Venues
 			</h1>
 
 			<ul style={{ display: "grid", gap: 12, listStyle: "none", padding: 0 }}>
-				{json.data?.map((e: any) => (
+				{json.data?.map((v: any) => (
 					<li
-						key={e.id}
+						key={v.id}
 						style={{
 							border: "1px solid #e5e7eb",
 							borderRadius: 12,
@@ -25,11 +21,11 @@ export default async function EventsPage() {
 						}}
 					>
 						<div style={{ fontSize: 18, fontWeight: 650 }}>
-							{e.attributes?.title}
+							{v.attributes?.title}
 						</div>
-						{e.attributes?.field_start && (
+						{v.attributes?.field_address && (
 							<div style={{ marginTop: 6, color: "#4b5563" }}>
-								Starts: {new Date(e.attributes.field_start).toLocaleString()}
+								Address: {v.attributes.field_address}
 							</div>
 						)}
 					</li>

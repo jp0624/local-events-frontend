@@ -1,18 +1,25 @@
-const BASE = process.env.DRUPAL_BASE_URL;
+const API_BASE =
+	process.env.DRUPAL_API_URL || "http://local-events.ddev.site/jsonapi";
 
-if (!BASE) throw new Error("Missing DRUPAL_BASE_URL in .env.local");
+async function fetchJson(endpoint: string) {
+	const url = `${API_BASE}${endpoint}`;
+	const res = await fetch(url);
+	if (!res.ok) {
+		const text = await res.text();
+		console.error(`Fetch failed for ${url}:`, res.status, text);
+		throw new Error(`Failed to fetch ${endpoint}`);
+	}
+	return res.json();
+}
 
 export async function fetchEvents() {
-	const url = `${BASE}/jsonapi/node/event?sort=field_start`;
+	return fetchJson("/node/event");
+}
 
-	const res = await fetch(url, {
-		// Server-side fetch cache; refresh every minute
-		next: { revalidate: 60 },
-	});
+export async function fetchVenues() {
+	return fetchJson("/node/venue");
+}
 
-	if (!res.ok) {
-		throw new Error(`Failed to fetch events: ${res.status} ${res.statusText}`);
-	}
-
-	return res.json();
+export async function fetchOrganizers() {
+	return fetchJson("/node/organizer");
 }
