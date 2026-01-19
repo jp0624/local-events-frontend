@@ -1,8 +1,17 @@
-// app/organizers/page.tsx
 import { fetchOrganizers } from "@/lib/drupal";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function OrganizersPage() {
-	const json = await fetchOrganizers();
+	const session = await getServerSession(authOptions);
+	const accessToken = session?.accessToken;
+
+	let json: any = { data: [] };
+	try {
+		json = await fetchOrganizers(accessToken);
+	} catch (err) {
+		console.error("Failed to fetch organizers:", err);
+	}
 
 	return (
 		<main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
